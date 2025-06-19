@@ -2,6 +2,7 @@ import netology.MessageService
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MessageServiceTest {
     private var service: MessageService = MessageService()
@@ -67,5 +68,19 @@ class MessageServiceTest {
         service.createMessage(1, "Привет")
         service.reset()
         assertEquals(0, service.getChats().size)
+    }
+
+    @Test
+    fun getMessages_returnsMessages() {
+        service.createMessage(1, "Привет")
+        val messages = service.getMessages(1, 1)
+        assertEquals(1, messages.size)
+    }
+
+    @Test
+    fun getMessages_marksAsRead() {
+        service.createMessage(1, "Привет")
+        val messages = service.getMessages(1, 1)
+        assertTrue(messages[0].isRead)
     }
 }

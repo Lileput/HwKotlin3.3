@@ -8,7 +8,7 @@ data class Message(
     val id: Int,
     val senderId: Int,
     val text: String,
-    val isRead: Boolean = false,
+    var isRead: Boolean = false,
 )
 
 data class Chat(
@@ -43,7 +43,18 @@ class MessageService {
         chats.removeIf { it.userId == userId }
     }
 
+    fun getMessages(userId: Int, count: Int): List<Message> {
+        val chat = chats.find { it.userId == userId } ?: return emptyList()
+        val messagesToReturn = chat.messages.takeLast(count)
+
+        messagesToReturn.forEach { it.isRead = true }
+
+        return messagesToReturn
+    }
+
     fun reset() {
         chats.clear()
     }
+
+
 }
