@@ -20,15 +20,15 @@ data class Chat(
 class MessageService {
     private val chats = mutableListOf<Chat>()
 
-    fun getUnreadChatsCount() : Int = chats.count { chat ->
-        chat.messages.any { !it.isRead }
-    }
+    fun getUnreadChatsCount() : Int = chats.asSequence()
+        .filter { chat -> chat.messages.any { !it.isRead } }
+        .count()
 
     fun getChats() : List<Chat> = chats.toList()
 
-    fun getLastMessages() : List<String> = chats.map { chat ->
-        chat.messages.lastOrNull()?.text ?:"Нет сообщений!"
-    }
+    fun getLastMessages() : List<String> = chats.asSequence()
+        .map { chat -> chat.messages.lastOrNull()?.text ?: "Нет сообщений!" }
+        .toList()
 
     fun createMessage(userId: Int, text: String) {
         val chat = chats.find { it.userId == userId } ?: Chat(chats.size + 1, userId).also { chats.add(it) }
@@ -45,8 +45,8 @@ class MessageService {
 
     fun getMessages(userId: Int, count: Int): List<Message> {
         val chat = chats.find { it.userId == userId } ?: return emptyList()
-        val messagesToReturn = chat.messages.takeLast(count)
 
+        val messagesToReturn = chat.messages.takeLast(count)
         messagesToReturn.forEach { it.isRead = true }
 
         return messagesToReturn
@@ -55,6 +55,4 @@ class MessageService {
     fun reset() {
         chats.clear()
     }
-
-
 }
